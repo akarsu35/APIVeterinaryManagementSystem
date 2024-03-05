@@ -190,7 +190,7 @@
 
 + > **GET(cursor) || Sisteme kayıtlı tüm aşı bilgilerini getirme** :localhost:8080/v1/vaccines
 
-+ > **GET(vaccineDate)|| girilen tarih aralığına göre aşı arama** : localhost:8080/v1/vaccines/date/{startDate & endDate}
++ > **GET(vaccineDate)|| girilen tarih aralığına göre aşı koruyuculuk bitiş tarihi bu aralıkta olan hayvanları listeleme** : localhost:8080/v1/vaccines/date/{startDate & endDate}
 
     ***Örnek : localhost:8080/v1/vaccines/date?startDate=2024-06-06&endDate=2025-06-12***
 

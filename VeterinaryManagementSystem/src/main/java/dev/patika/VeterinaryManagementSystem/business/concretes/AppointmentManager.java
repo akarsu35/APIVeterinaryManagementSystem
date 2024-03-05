@@ -39,6 +39,7 @@ public class AppointmentManager implements IAppointmentService {
 
     @Override
     public Appointment save(Appointment appointment) {
+
         LocalTime appointmentTime = appointment.getAppointmentDate().toLocalTime();
         if (appointmentTime.getMinute() != 0 || appointmentTime.getSecond() != 0) {
             throw new TimeException(Msg.TIME_ERROR); //Hayvanların her türlü muayenesi için doktorlardan uygun tarihlerde ve saatlerde randevu oluşturulmalıdır. Her doktor için sadece saat başı randevu oluşturulabilir. Bir muayenenin sabit olarak bir saat süreceğini kabul edin.
@@ -99,6 +100,9 @@ public class AppointmentManager implements IAppointmentService {
 
     @Override
     public List<Appointment> getByAnimalIdAndAppointmentDate(long animalId, LocalDateTime starDate, LocalDateTime endDate) {
+        if (starDate.isAfter(endDate)) {//tarih kontrolu
+            throw new TimeException("başlangıç tarihi, bitiş tarihinden sonra olamaz.");
+        }
         if (this.appointmentRepo.getByAnimalIdAndAppointmentDate(animalId, starDate, endDate).isEmpty()) {
             throw new NotFoundException(Msg.NOT_FOUND);
         }
@@ -109,6 +113,9 @@ public class AppointmentManager implements IAppointmentService {
 
     @Override
     public List<Appointment> getByDoctorIdAndAppointmentDate(long doctorId, LocalDateTime startDate, LocalDateTime endDate) {
+        if (startDate.isAfter(endDate)) {//tarih kontrolu
+            throw new TimeException("başlangıç tarihi, bitiş tarihinden sonra olamaz.");
+        }
         if(this.appointmentRepo.getByDoctorIdAndAppointmentDate(doctorId, startDate, endDate).isEmpty()){
             throw new NotFoundException(Msg.NOT_FOUND);
         }

@@ -2,6 +2,7 @@ package dev.patika.VeterinaryManagementSystem.api;
 
 import dev.patika.VeterinaryManagementSystem.business.abstracts.IAnimalService;
 import dev.patika.VeterinaryManagementSystem.business.abstracts.IVaccineService;
+import dev.patika.VeterinaryManagementSystem.business.concretes.VaccineManager;
 import dev.patika.VeterinaryManagementSystem.core.config.ModelMapper.IModelMapperService;
 import dev.patika.VeterinaryManagementSystem.core.result.Result;
 import dev.patika.VeterinaryManagementSystem.core.result.ResultData;
@@ -30,13 +31,15 @@ public class VaccineController {
     private final IVaccineService vaccineService;
     private final IModelMapperService modelMapper;
     private final IAnimalService animalService;
+    private final VaccineManager vaccineManager;
 
     public VaccineController(IVaccineService vaccineService,
                              IModelMapperService modelMapper,
-                             IAnimalService animalService) {//DI
+                             IAnimalService animalService, VaccineManager vaccineManager) {//DI
         this.vaccineService = vaccineService;
         this.modelMapper = modelMapper;
         this.animalService = animalService;
+        this.vaccineManager = vaccineManager;
     }
 
     //Değerlendrime formu 15
@@ -44,13 +47,15 @@ public class VaccineController {
     @PostMapping()//hayvana ait aşı kaydetme
     @ResponseStatus(HttpStatus.CREATED)
     public ResultData<VaccineResponse> save(@Valid @RequestBody VaccineSaveRequest vaccineSaveRequest) {
+
         Vaccine saveVaccine = this.modelMapper.forRequest().map(vaccineSaveRequest, Vaccine.class);
-        /*Animal animal = this.animalService.get(vaccineSaveRequest.getAnimal().getId());
-        saveVaccine.setAnimal(animal);*/
+        Animal animal = this.animalService.get(vaccineSaveRequest.getAnimal().getId());
+        saveVaccine.setAnimal(animal);
         this.vaccineService.save(saveVaccine);
 
         return ResultHelper.created(this.modelMapper.forResponse().map(saveVaccine, VaccineResponse.class));
     }
+
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<VaccineResponse> get(@PathVariable("id") long id) {

@@ -25,4 +25,5 @@ public interface IVaccineService {
 
     List<Vaccine> getVaccinesByDate(LocalDate startDate, LocalDate endDate);
 
+
 }

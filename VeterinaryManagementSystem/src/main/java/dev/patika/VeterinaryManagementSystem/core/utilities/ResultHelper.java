@@ -41,7 +41,7 @@ public class ResultHelper {
         return new Result(false, msg, "404");
     }
     public static Result timeError(String msg) {
-        return new Result(true, msg, "400");
+        return new Result(false, msg, "400");
     }//randevuların tam saatlerde alıncağı
 
     public static <T> ResultData<CursorResponse<T>> cursor (Page<T> pageData){

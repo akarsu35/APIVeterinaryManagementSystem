@@ -120,7 +120,7 @@ public class AnimalController {
     }
 
     //Değerlendrime formu 20
-    @GetMapping("/vaccineName/{animalName}")//hayvan isme göre aşı bilgilerini getirme
+    @GetMapping("/vaccineName/{animalName}")//hayvan ismine göre aşı bilgilerini getirme
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<ResultData<List<VaccineResponse>>> getAnimalVaccines(@PathVariable("animalName") String name) {
         List<Animal> animal = this.animalService.filterByName(name);

@@ -1,5 +1,6 @@
 package dev.patika.VeterinaryManagementSystem.dao;
 
+import dev.patika.VeterinaryManagementSystem.dto.response.vaccine.VaccineResponse;
 import dev.patika.VeterinaryManagementSystem.entities.Animal;
 import dev.patika.VeterinaryManagementSystem.entities.Vaccine;
 import org.springframework.data.domain.Page;
@@ -36,6 +37,5 @@ public interface VaccineRepo extends JpaRepository<Vaccine, Long> {
     List<Vaccine> getVaccinesByDate(@Param("startDate") LocalDate startDate,
                                     @Param("endDate") LocalDate endDate);
 
-
-
+    List<Vaccine> getVaccinesByAnimalName(String name);
 }

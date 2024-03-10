@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class VaccineUpdateRequest {
     @Positive(message = "ID değeri pozitif olmak zorunda")
-    private long id;
+    private Long id;
     @NotNull(message = "Aşı adı boş olamaz")
     private String name;
 

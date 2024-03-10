@@ -1,5 +1,6 @@
 package dev.patika.VeterinaryManagementSystem.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,7 +17,7 @@ import java.util.List;
 public class Doctor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String name;
     private String phone;
 
@@ -25,10 +26,13 @@ public class Doctor {
     private String address;
     private String city;
 
-    @OneToMany(mappedBy = "doctor")
+    @JsonIgnore
+    @OneToMany(mappedBy = "doctor",cascade = CascadeType.REMOVE)
     private List<Appointment> appointmentList;
 
-    @OneToMany(mappedBy = "doctor")
+    @JsonIgnore
+    @OneToMany(mappedBy = "doctor",cascade = CascadeType.REMOVE)
     private List<AvaibleDate> avaibleDateList;
+
 
 }

@@ -1,5 +1,6 @@
 package dev.patika.VeterinaryManagementSystem.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,7 +19,8 @@ public class AvaibleDate {
     private long id;
     private LocalDate availableDate;
 
-    @ManyToOne
+    @ManyToOne()
+
     @JoinColumn(name = "doctor_id", referencedColumnName = "id")
     private Doctor doctor;
 

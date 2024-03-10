@@ -18,7 +18,7 @@ import java.util.List;
 public class Animal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     @NotNull
     private String name;
 

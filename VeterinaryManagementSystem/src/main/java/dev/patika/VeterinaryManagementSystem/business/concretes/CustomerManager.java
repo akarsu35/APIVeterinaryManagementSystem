@@ -5,14 +5,14 @@ import dev.patika.VeterinaryManagementSystem.core.config.ModelMapper.IModelMappe
 import dev.patika.VeterinaryManagementSystem.core.exception.AlreadyExistsException;
 import dev.patika.VeterinaryManagementSystem.core.exception.NotFoundException;
 import dev.patika.VeterinaryManagementSystem.core.utilities.Msg;
-import dev.patika.VeterinaryManagementSystem.core.utilities.ResultHelper;
+import dev.patika.VeterinaryManagementSystem.dao.AnimalRepo;
 import dev.patika.VeterinaryManagementSystem.dao.CustomerRepo;
+import dev.patika.VeterinaryManagementSystem.dto.response.animal.AnimalResponse;
+import dev.patika.VeterinaryManagementSystem.entities.Animal;
 import dev.patika.VeterinaryManagementSystem.entities.Customer;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.stream;
@@ -20,11 +20,12 @@ import static java.util.Arrays.stream;
 @Service
 public class CustomerManager implements ICustomerService {
     private final CustomerRepo customerRepo;
-    private final IModelMapperService modelMapper;
 
-    public CustomerManager(CustomerRepo customerRepo, IModelMapperService modelMapper) {//DI
+
+    public CustomerManager(CustomerRepo customerRepo) {//DI
         this.customerRepo = customerRepo;
-        this.modelMapper = modelMapper;
+
+
     }
 
     public Customer save(Customer customer) {
@@ -39,11 +40,13 @@ public class CustomerManager implements ICustomerService {
         return this.customerRepo.findById(id).orElseThrow(()->new NotFoundException(Msg.NOT_FOUND));
     }
 
+
     @Override
-    public Page<Customer> cursor(int page, int pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize);
-        return this.customerRepo.findAll(pageable);
+    public List<Customer> getAll() {
+        return this.customerRepo.findAll();
     }
+
+
 
     @Override
     public Customer update(Customer customer) {
@@ -57,14 +60,16 @@ public class CustomerManager implements ICustomerService {
         this.customerRepo.delete(customer);
         return true;
     }
-    @Override
-    public List<Customer> filterByName(String name) {
-        return customerRepo.findByNameContaining(name);
-    }
+
+
 
     @Override
-    public List<Customer> filterByNameIgnoreCase(String name) {
-        return customerRepo.findByNameContainingIgnoreCase(name);
+    public List<Customer> filterByCustomerName(String customerName) {
+        List<Customer> filteredCustomers = this.customerRepo.findByNameContainingIgnoreCase(customerName);
+        if (filteredCustomers.isEmpty()) {
+            throw new NotFoundException(Msg.NOT_FOUND);
+        }
+        return filteredCustomers;
     }
 
 

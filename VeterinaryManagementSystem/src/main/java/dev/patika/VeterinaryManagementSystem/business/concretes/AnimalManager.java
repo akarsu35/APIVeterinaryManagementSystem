@@ -1,13 +1,16 @@
 package dev.patika.VeterinaryManagementSystem.business.concretes;
 
 import dev.patika.VeterinaryManagementSystem.business.abstracts.IAnimalService;
+import dev.patika.VeterinaryManagementSystem.core.config.ModelMapper.IModelMapperService;
 import dev.patika.VeterinaryManagementSystem.core.exception.AlreadyExistsAnimalException;
 import dev.patika.VeterinaryManagementSystem.core.exception.AlreadyExistsException;
 import dev.patika.VeterinaryManagementSystem.core.exception.NotFoundException;
 import dev.patika.VeterinaryManagementSystem.core.utilities.Msg;
 import dev.patika.VeterinaryManagementSystem.dao.AnimalRepo;
+import dev.patika.VeterinaryManagementSystem.dao.CustomerRepo;
 import dev.patika.VeterinaryManagementSystem.dto.request.animal.AnimalSaveRequest;
 import dev.patika.VeterinaryManagementSystem.dto.response.animal.AnimalResponse;
+import dev.patika.VeterinaryManagementSystem.dto.response.vaccine.VaccineResponse;
 import dev.patika.VeterinaryManagementSystem.entities.Animal;
 import dev.patika.VeterinaryManagementSystem.entities.Customer;
 import dev.patika.VeterinaryManagementSystem.entities.Vaccine;
@@ -22,9 +25,13 @@ import java.util.List;
 @Service
 public class AnimalManager implements IAnimalService {
     private final AnimalRepo animalRepo;
+    private final CustomerRepo customerRepo;
+    private final IModelMapperService modelMapper;
 
-    public AnimalManager(AnimalRepo animalRepo) {
+    public AnimalManager(AnimalRepo animalRepo, CustomerRepo customerRepo, IModelMapperService modelMapper) {
         this.animalRepo = animalRepo;
+        this.customerRepo = customerRepo;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -36,19 +43,43 @@ public class AnimalManager implements IAnimalService {
     }
 
     @Override
-    public Animal get(long id) {
-        return this.animalRepo.findById(id).orElseThrow(()->new NotFoundException(Msg.NOT_FOUND));
+    public Animal get(Long id) {
+        Animal animal = this.animalRepo.findById(id).orElseThrow(()->new NotFoundException(Msg.NOT_FOUND));
+        this.modelMapper.forResponse().map(animal, AnimalResponse.class);
+        if(!this.animalRepo.existsById(id)){
+            throw new NotFoundException(Msg.NOT_FOUND);
+        }
+        return animal;
+
+        //return this.animalRepo.findById(id).orElseThrow(()->new NotFoundException(Msg.NOT_FOUND));
     }
 
     @Override
-    public Page<Animal> cursor(int page, int pageSize) {
+    public List<Animal> getAll() {
+        return this.animalRepo.findAll();
+
+    }
+
+    @Override
+    public List<Animal> getAnimalByCustomerName(String name) {
+        List<Animal> filteredAnimals = this.animalRepo.findByCustomerName(name);
+        if (filteredAnimals.isEmpty()) {
+            throw new NotFoundException(Msg.NOT_FOUND);
+        }
+        return this.animalRepo.findByCustomerName(name);
+    }
+
+    /*public Page<Animal> cursor(int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
         return this.animalRepo.findAll(pageable);
-    }
+    }*/
 
     @Override
     public Animal update(Animal animal) {
         this.get(animal.getId());
+        if(this.get(animal.getId())==null){
+            throw new NotFoundException(Msg.NOT_FOUND);
+        }
         return this.animalRepo.save(animal);
     }
 
@@ -64,18 +95,31 @@ public class AnimalManager implements IAnimalService {
         return animalRepo.findByNameContaining(name);
     }
 
-    @Override
-    public List<Animal> filterByNameIgnoreCase(String name) {
-        return animalRepo.findByNameContainingIgnoreCase(name);
-    }
+
 
     @Override
-    public List<Animal> getAnimalByCustomer(Customer customer) {
-        return this.animalRepo.getAnimalByCustomer(customer);
+    public List<Animal> filterByAnimalName(String animalName) {
+        List<Animal> filteredAnimals = this.animalRepo.findByNameContainingIgnoreCase(animalName);
+        if (filteredAnimals.isEmpty()) {
+            throw new NotFoundException(Msg.NOT_FOUND);
+        }
+
+        return filteredAnimals;
+
     }
+    /*public ResponseEntity<ResultData<List<VaccineResponse>>> getAnimalVaccines(@PathVariable("animalName") String name) {
+        List<Animal> animal = this.animalService.filterByName(name);
 
-
-
+        //List<Vaccine> filteredVaccines = this.vaccineService.getVaccinesByAnimal(animal);
+        List<VaccineResponse> vaccineResponses = animal
+                .stream()
+                .map(vaccine -> this.modelMapper.forResponse().map(vaccine, VaccineResponse.class))
+                .collect(Collectors.toList());
+        if (vaccineResponses.isEmpty()) {
+            return ResponseEntity.ok(ResultHelper.notFoundError(vaccineResponses));
+        }
+        return ResponseEntity.ok(ResultHelper.success(vaccineResponses));
+    }*/
 
 
 }

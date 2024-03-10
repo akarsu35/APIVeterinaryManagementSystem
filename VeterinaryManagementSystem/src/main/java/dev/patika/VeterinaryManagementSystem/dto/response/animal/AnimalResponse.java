@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AnimalResponse {
-    private long id;
+    private Long id;
     private String name;
     private String species;
     private String breed;

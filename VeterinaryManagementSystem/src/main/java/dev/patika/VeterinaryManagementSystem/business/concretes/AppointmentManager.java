@@ -1,37 +1,46 @@
 package dev.patika.VeterinaryManagementSystem.business.concretes;
 
 import dev.patika.VeterinaryManagementSystem.business.abstracts.IAppointmentService;
+import dev.patika.VeterinaryManagementSystem.core.config.ModelMapper.IModelMapperService;
 import dev.patika.VeterinaryManagementSystem.core.exception.AlreadyExistsException;
 import dev.patika.VeterinaryManagementSystem.core.exception.NotFoundException;
 import dev.patika.VeterinaryManagementSystem.core.exception.TimeException;
 import dev.patika.VeterinaryManagementSystem.core.utilities.Msg;
+import dev.patika.VeterinaryManagementSystem.dao.AnimalRepo;
 import dev.patika.VeterinaryManagementSystem.dao.AppointmentRepo;
 import dev.patika.VeterinaryManagementSystem.dao.AvaibleDateRepo;
+import dev.patika.VeterinaryManagementSystem.dao.DoctorRepo;
+import dev.patika.VeterinaryManagementSystem.dto.request.appointment.AppointmentUpdateRequest;
+import dev.patika.VeterinaryManagementSystem.dto.response.appointment.AppointmentResponse;
+import dev.patika.VeterinaryManagementSystem.entities.Animal;
 import dev.patika.VeterinaryManagementSystem.entities.Appointment;
 import dev.patika.VeterinaryManagementSystem.entities.AvaibleDate;
 import dev.patika.VeterinaryManagementSystem.entities.Doctor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
-import java.sql.Date;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AppointmentManager implements IAppointmentService {
 
     private final AppointmentRepo appointmentRepo;
-    private final AvaibleDateRepo avaibleDateRepo;
 
-    public AppointmentManager(AppointmentRepo appointmentRepo, AvaibleDateRepo avaibleDateRepo) {
+    private final IModelMapperService modelMapper;
+    private final AnimalRepo animalRepo;
+    private final DoctorRepo doctorRepo;
+
+
+    public AppointmentManager(AppointmentRepo appointmentRepo, IModelMapperService modelMapper, AnimalRepo animalRepo, DoctorRepo doctorRepo) {
         this.appointmentRepo = appointmentRepo;
-        this.avaibleDateRepo = avaibleDateRepo;
+
+        this.modelMapper = modelMapper;
+
+        this.animalRepo = animalRepo;
+        this.doctorRepo = doctorRepo;
     }
 
     //Değerlendrime formu 22
@@ -56,58 +65,87 @@ public class AppointmentManager implements IAppointmentService {
         } else {
             throw new NotFoundException("Doktorun girilen gün için müsaitliği bulunmamaktadır.");
         }
+
     }
 
     private boolean isAppointmentTimeAvailable(LocalDateTime appointmentDateTime, Doctor doctor) {
         for (Appointment existingAppointment : doctor.getAppointmentList()) {
-            // Assuming appointments are stored as LocalDateTime in the Appointment object
+
             LocalDateTime existingAppointmentTime = existingAppointment.getAppointmentDate();
 
             if (existingAppointmentTime != null &&
                     existingAppointmentTime.toLocalDate().equals(appointmentDateTime.toLocalDate()) &&
                     existingAppointmentTime.toLocalTime().equals(appointmentDateTime.toLocalTime())) {
-                return false; // Existing appointment at the same time
+                return false;
             }
         }
-        return true; // No existing appointment at the same time
+        return true;
     }
 
     @Override
-    public Appointment get(long id) {
-        return this.appointmentRepo.findById(id).orElseThrow(()->new NotFoundException(Msg.NOT_FOUND));
+    public AppointmentResponse get(long id) {
+        AppointmentResponse appointmentResponse = this.modelMapper.forResponse().map(this.appointmentRepo.findById(id).orElseThrow(()->new NotFoundException(Msg.NOT_FOUND)), AppointmentResponse.class);
+        return appointmentResponse;
+
+
     }
 
     @Override
-    public Page<Appointment> cursor(int page, int pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize);
-        return this.appointmentRepo.findAll(pageable);
+    public List<AppointmentResponse> getAll() {
+
+        return this.appointmentRepo.findAll().stream()
+                .map(appointment -> this.modelMapper.forResponse()
+                        .map(appointment, AppointmentResponse.class))
+                .collect(Collectors.toList());
     }
 
+
     @Override
-    public Appointment update(Appointment appointment) {
-        this.get(appointment.getId());
-        return this.appointmentRepo.save(appointment);
+    public AppointmentResponse update(AppointmentUpdateRequest appointmentUpdateRequest) {
+        this.get(appointmentUpdateRequest.getId());
+        // Hayvanı kontrol et
+        Animal animal = appointmentUpdateRequest.getAnimal();
+        if (animal != null && animal.getId() != null && !animalRepo.existsById(animal.getId())) {
+            throw new NotFoundException("Hayvan bulunamadı");
+        }
+
+        // Doktoru kontrol et
+        Doctor doctor = appointmentUpdateRequest.getDoctor();
+        if (doctor != null && doctor.getId() != null && !doctorRepo.existsById(doctor.getId())) {
+            throw new NotFoundException("Doktor bulunamadı");
+        }
+        if (this.get(appointmentUpdateRequest.getId()) == null) {
+            throw new NotFoundException(Msg.NOT_FOUND);
+        }
+        //this.modelMapper.forResponse().map(appointmentUpdateRequest, AppointmentResponse.class);
+        return this.modelMapper.forResponse().map(this.appointmentRepo.save(this.modelMapper.forRequest().map(appointmentUpdateRequest, Appointment.class)), AppointmentResponse.class);
+
     }
 
     @Override
     public boolean delete(long id) {
-        Appointment appointment = this.get(id);
-        this.appointmentRepo.delete(appointment);
+        AppointmentResponse appointment = this.get(id);
+        this.appointmentRepo.deleteById(id);
         return true;
     }
 
     //
 
     @Override
-    public List<Appointment> getByAnimalIdAndAppointmentDate(long animalId, LocalDateTime starDate, LocalDateTime endDate) {
-        if (starDate.isAfter(endDate)) {//tarih kontrolu
-            throw new TimeException("başlangıç tarihi, bitiş tarihinden sonra olamaz.");
+    public List<Appointment> getByAnimalIdAndAppointmentDate(Long animalId, LocalDateTime startDate, LocalDateTime endDate) {
+        if (startDate.isAfter(endDate)) {
+            throw new TimeException("Başlangıç tarihi, bitiş tarihinden sonra olamaz.");
         }
-        if (this.appointmentRepo.getByAnimalIdAndAppointmentDate(animalId, starDate, endDate).isEmpty()) {
+
+        List<Appointment> appointmentList = appointmentRepo.getByAnimalIdAndAppointmentDate(animalId, startDate, endDate);
+
+        if (appointmentList.isEmpty()) {
             throw new NotFoundException(Msg.NOT_FOUND);
         }
-        return this.appointmentRepo.getByAnimalIdAndAppointmentDate(animalId, starDate, endDate);
+
+        return appointmentList;
     }
+
 
     //Değerlendrime formu 24
 

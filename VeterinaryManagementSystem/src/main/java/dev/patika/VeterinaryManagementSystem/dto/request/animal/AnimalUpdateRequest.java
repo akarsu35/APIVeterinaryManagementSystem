@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class AnimalUpdateRequest {
     @NotNull(message = "Animal id'si boş olamaz")
-    private long id;
+    private Long id;
 
     @NotNull(message = "Animal adı boş olamaz")
     private String name;

@@ -3,6 +3,7 @@ package dev.patika.VeterinaryManagementSystem.dao;
 import dev.patika.VeterinaryManagementSystem.entities.Animal;
 import dev.patika.VeterinaryManagementSystem.entities.Appointment;
 import dev.patika.VeterinaryManagementSystem.entities.AvaibleDate;
+import dev.patika.VeterinaryManagementSystem.entities.Doctor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -36,7 +37,5 @@ public interface AppointmentRepo extends JpaRepository<Appointment, Long> {
    @Query("SELECT a FROM Appointment a WHERE a.appointmentDate = :date AND a.doctor.id = :doctorId")
    List<Appointment> checkAppointmentsDatesByDoctor(@Param("doctorId") long animalId,
                                                  @Param("date") LocalDateTime date);
-
-
 
 }

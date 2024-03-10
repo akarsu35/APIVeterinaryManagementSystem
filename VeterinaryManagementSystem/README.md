@@ -68,7 +68,7 @@
   
      ***Örnek : localhost:8080/v1/customers/customerName/akarsu***
   
-+ > **GET(animals)|| İsmi girilen hayvan sahibinin sistemde kayıtlı tüm hayvan bilgilerini getirme** : localhost:8080/v1/customers/animals/{animalName}
++ > **GET(animals)|| İsmi girilen hayvan sahibinin sistemde kayıtlı tüm hayvan bilgilerini getirme** : localhost:8080/v1/customers/animals/{customerName}
   
      ***Örnek : localhost:8080/v1/customers/animals/cumhurAkarsu***
   
@@ -135,7 +135,7 @@
 
 + > **GET(findByName) || Hayvan ismine göre filtreleme** :localhost:8080/v1/animals/animalName/{animalName}
 
-+ > **GET(vaccines) || Hayvan ismine göre aşı bilgilerini getirme** : localhost:8080/v1/animals/vaccineName/{animal name}
++ > **GET(vaccines) || Hayvan ismine göre aşı bilgilerini getirme** : localhost:8080/v1/animals/vaccineName/{animalName}
 
 
   ### Vaccine Endpoints
@@ -190,7 +190,7 @@
 
 + > **GET(cursor) || Sisteme kayıtlı tüm aşı bilgilerini getirme** :localhost:8080/v1/vaccines
 
-+ > **GET(vaccineDate)|| girilen tarih aralığına göre aşı koruyuculuk bitiş tarihi bu aralıkta olan hayvanları listeleme** : localhost:8080/v1/vaccines/date/{startDate & endDate}
++ > **GET(vaccineDate)|| girilen tarih aralığına göre aşı koruyuculuk bitiş tarihi bu aralıkta olan hayvanları listeleme** : localhost:8080/v1/vaccines/date/{startDate}/{endDate}
 
     ***Örnek : localhost:8080/v1/vaccines/date?startDate=2024-06-06&endDate=2025-06-12***
 
@@ -235,7 +235,7 @@
 
 + > **DELETE(delete) || Id'si igirlen doktor kaydının silinmesi** : localhost:8080/v1/doctors/{id}
 
-+ > **GET(cursor) || kayıtlı doktor bilgilerinin getirme** : localhost:8080/v1/customers
++ > **GET(cursor) || kayıtlı doktor bilgilerinin getirme** : localhost:8080/v1/doctors
 
 
 
@@ -326,17 +326,17 @@
 
 + > **DELETE(delete) || Id'si girilen randvu bilgilerinin silinmesi** : localhost:8080/v1/appointments/{id}
 
-+ > **GET(getByAnimalIdAndDate) || girilen tarih aralığına ve hayvan id sine göre randevuları getirme** : localhost:8080/v1/appointments/getByAnimalIdAndAppointmentDate/{animalId & starDate & endDate}
++ > **GET(getByAnimalIdAndDate) || girilen tarih aralığına ve hayvan id sine göre randevuları getirme** : localhost:8080/v1/appointments/getByAnimalIdAndAppointmentDate/{animalId}/{startDate}/{endDate}
 
     ***Örnek :***
 
-   http://localhost:8080/v1/appointments/getByAnimalIdAndAppointmentDate?animalId=21&starDate=2025-12-11T00%3A00%3A00&endDate=2025-12-15T00%3A00%3A00
+   localhost:8080/v1/appointments/getByAnimalIdAndAppointmentDate/16/2024-02-09T00:00:00/2024-04-10T00:00:00
 
-+ > **GET (getByDoctorIdAndAppointmentDate) || Girilen tarih aralığına ve doctor id sine göre randevuları getirme** : localhost:8080/v1/appointments/getByDoctorIdAndAppointmentDate/{doctorId & starDate & endDate}
++ > **GET (getByDoctorIdAndAppointmentDate) || Girilen tarih aralığına ve doctor id sine göre randevuları getirme** : localhost:8080/v1/appointments/getByDoctorIdAndAppointmentDate/{doctorId}/{startDate}/{endDate}
 
     ***Örnek :***
 
-    http://localhost:8080/v1/appointments/getByDoctorIdAndAppointmentDate?doctorId=1&starDate=2025-12-11T00%3A00%3A00&endDate=2025-12-15T00%3A00%3A00
+    http://localhost:8080/v1/appointments/getByDoctorIdAndAppointmentDate/3/2024-02-09T00:00:00/2024-04-10T00:00:00
 
 
 

@@ -15,7 +15,7 @@ import java.time.LocalDate;
 public class Vaccine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     private String name;
 

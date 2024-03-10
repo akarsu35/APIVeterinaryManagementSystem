@@ -8,6 +8,6 @@ public class Msg {
     public static final String BEFORE_SAVED ="daha önce kayıt edilmiştir" ;
     public static final String MAIL_ALREADY_EXIST = "mail zaten kayıtlı" ;
     public static final String NAME_ALREADY_EXIST = "müşterinin bu isimde kayıtlı hayvanı bulunmaktadır." ;
-    public static final String DATE_ALREADY_EXIST = "bu tarihte kayıtlı doctor bulunmaktadır." ;
+    public static final String DATE_ALREADY_EXIST = "bu tarihte doktorun kaydı bulunmaktadır." ;
     public static final String TIME_ERROR = "Randevu sadece tam saatlerde alınabilir." ;
 }

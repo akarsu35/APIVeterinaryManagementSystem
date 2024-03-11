@@ -10,6 +10,7 @@ import dev.patika.VeterinaryManagementSystem.dao.AnimalRepo;
 import dev.patika.VeterinaryManagementSystem.dao.AppointmentRepo;
 import dev.patika.VeterinaryManagementSystem.dao.AvaibleDateRepo;
 import dev.patika.VeterinaryManagementSystem.dao.DoctorRepo;
+import dev.patika.VeterinaryManagementSystem.dto.request.appointment.AppointmentSaveRequest;
 import dev.patika.VeterinaryManagementSystem.dto.request.appointment.AppointmentUpdateRequest;
 import dev.patika.VeterinaryManagementSystem.dto.response.appointment.AppointmentResponse;
 import dev.patika.VeterinaryManagementSystem.entities.Animal;
@@ -58,6 +59,7 @@ public class AppointmentManager implements IAppointmentService {
         if (!availableDates.isEmpty()) {
             List<Appointment> appointments = this.appointmentRepo.checkAppointmentsDatesByDoctor(appointment.getDoctor().getId(),appointment.getAppointmentDate());
             if (appointments.isEmpty()) {
+                appointment.setAnimal(this.animalRepo.findById(appointment.getAnimal().getId()).orElse(null));
                 return this.appointmentRepo.save(appointment);
             } else {
                 throw new AlreadyExistsException("Doktorun bu satte başka bir randevusu mevcuttur");
@@ -67,6 +69,7 @@ public class AppointmentManager implements IAppointmentService {
         }
 
     }
+
 
     private boolean isAppointmentTimeAvailable(LocalDateTime appointmentDateTime, Doctor doctor) {
         for (Appointment existingAppointment : doctor.getAppointmentList()) {

@@ -51,7 +51,6 @@ public class AnimalManager implements IAnimalService {
         }
         return animal;
 
-        //return this.animalRepo.findById(id).orElseThrow(()->new NotFoundException(Msg.NOT_FOUND));
     }
 
     @Override
@@ -69,10 +68,6 @@ public class AnimalManager implements IAnimalService {
         return this.animalRepo.findByCustomerName(name);
     }
 
-    /*public Page<Animal> cursor(int page, int pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize);
-        return this.animalRepo.findAll(pageable);
-    }*/
 
     @Override
     public Animal update(Animal animal) {
@@ -107,19 +102,5 @@ public class AnimalManager implements IAnimalService {
         return filteredAnimals;
 
     }
-    /*public ResponseEntity<ResultData<List<VaccineResponse>>> getAnimalVaccines(@PathVariable("animalName") String name) {
-        List<Animal> animal = this.animalService.filterByName(name);
-
-        //List<Vaccine> filteredVaccines = this.vaccineService.getVaccinesByAnimal(animal);
-        List<VaccineResponse> vaccineResponses = animal
-                .stream()
-                .map(vaccine -> this.modelMapper.forResponse().map(vaccine, VaccineResponse.class))
-                .collect(Collectors.toList());
-        if (vaccineResponses.isEmpty()) {
-            return ResponseEntity.ok(ResultHelper.notFoundError(vaccineResponses));
-        }
-        return ResponseEntity.ok(ResultHelper.success(vaccineResponses));
-    }*/
-
 
 }

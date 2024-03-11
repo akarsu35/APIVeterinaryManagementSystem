@@ -37,8 +37,8 @@ public class AvaibleDateController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Result get(@PathVariable("id") long id){
-        return ResultHelper.success(this.avaibleDateService.get(id).getAvailableDate());
+    public Optional<AvaibleDate> get(@PathVariable("id") long id) {
+        return Optional.of(this.avaibleDateService.get(id));
     }
 
 

@@ -56,10 +56,8 @@ public class AvaibleDateManager implements IAvaibleDateService {
 
 
     @Override
-    public AvaibleDateResponse get(long id) {
-        AvaibleDate avaibleDate = this.avaibleDateRepo.findById(id).orElseThrow(()->new NotFoundException(Msg.NOT_FOUND));
-        AvaibleDateResponse avaibleDateResponse = modelMapper.forResponse().map(avaibleDate, AvaibleDateResponse.class);
-        return avaibleDateResponse;
+    public AvaibleDate get(long id) {
+        return  this.avaibleDateRepo.findById(id).orElseThrow(()->new NotFoundException(Msg.NOT_FOUND));
     }
 
 

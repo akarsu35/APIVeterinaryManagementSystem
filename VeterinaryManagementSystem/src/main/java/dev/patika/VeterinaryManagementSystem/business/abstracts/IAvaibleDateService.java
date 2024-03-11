@@ -18,7 +18,7 @@ public interface IAvaibleDateService {
     //AvaibleDate save(AvaibleDate date);
     //ResultData<LocalDate> save(AvaibleDateSaveRequest date);
     AvaibleDateResponse save(AvaibleDateSaveRequest date);
-    AvaibleDateResponse get(long id);
+    AvaibleDate get(long id);
     //ResultData<CursorResponse<LocalDate>> cursor(int page, int pageSize);
     List<AvaibleDateResponse> getAll();
     AvaibleDateResponse update(AvaibleDateUpdateRequest date);
